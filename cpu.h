@@ -25,4 +25,5 @@ void print_allmem(void);
 uint8_t cpu_fetch(void);
 STATE cpu_execute (uint8_t opcode);
 void cpu_run(void);
+
 #endif

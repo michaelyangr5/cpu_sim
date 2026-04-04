@@ -1,9 +1,8 @@
 #include "cpu.h"
 #include <string.h>
 #include <stdio.h>
-CPU cpu;
-OP op;
-STATE state;
+static CPU cpu;
+
 void cpu_init(void){
 
 	memset(cpu.registers , 0 , sizeof(cpu.registers));
@@ -18,7 +17,7 @@ void cpu_load(uint8_t *commands , uint8_t size){
 }
 
 void print_allmem(void){
-	for(uint16_t i = 0 ; i < 5 ; i++ ){
+	for(uint16_t i = 0 ; i < MAX_MEM ; i++ ){
 		printf("[%d] = %d \n", i , cpu.memory[i]);
 	}
 }
@@ -44,7 +43,9 @@ STATE cpu_execute (uint8_t opcode) {
 
 void cpu_run(void){
 	while(1){
+
 	if(cpu_execute(cpu_fetch()) == CPU_STOP)
-	break;
+		break;
 	}
+	
 }
