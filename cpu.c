@@ -28,13 +28,52 @@ uint8_t cpu_fetch(void){
 }
 
 STATE cpu_execute (uint8_t opcode) {
-	
+	uint8_t address;
+	uint8_t data;
+	uint8_t reg;
+	uint8_t reg_1;
+	uint16_t result;
 	switch( opcode ){
 		case HLT :
 			return CPU_STOP;
 		
 		case NOP:	
 			return CPU_RUNNING;
+		
+		case LOAD: 
+			reg = cpu_fetch();
+			data = cpu_fetch();
+			cpu.registers[reg] = data;
+			return CPU_RUNNING;
+		
+
+		case STORE: 
+			reg = cpu_fetch();
+			address = cpu_fetch();
+			cpu.memory[address] = cpu.registers[reg];
+			return CPU_RUNNING;
+		
+
+		case ADD: 
+			reg = cpu_fetch();
+			reg_1 = cpu_fetch();
+			result = cpu.registers[reg]  + cpu.registers[reg_1];
+			cpu.registers[cpu_fetch()] = result;	
+			if (result == 0)
+    				cpu.flags |= FLAG_ZERO;
+			else
+    				cpu.flags &= ~FLAG_ZERO;
+			return CPU_RUNNING;
+		
+		
+		case SUB: 
+			reg = cpu_fetch();
+			reg_1 = cpu_fetch();
+			result = cpu.registers[reg]  - cpu.registers[reg_1];
+			cpu.registers[cpu_fetch()] = result;	
+			return CPU_RUNNING;	
+		
+
 	default :
 		return CPU_RUNNING;
 	}
