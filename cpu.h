@@ -7,9 +7,16 @@
 
 #define MAX_MEM 256
 
+#define FLAG_ZERO 0x02
+
+#define FLAG_CARRY 0x01
+
+#define FLAG_NEGATIVE 0x04
+
+
 typedef enum { CPU_STOP , CPU_RUNNING } STATE;
 
-typedef enum { HLT , NOP , LOAD , STORE , ADD , SUB , JMP , JZ   }OP;
+typedef enum { HLT , NOP , LOAD , STORE , ADD , SUB , JMP , JZ ,ADC  }OP;
 typedef struct{
 	
 	uint8_t	registers[NUMBER_REGISTERS];

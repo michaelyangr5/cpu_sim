@@ -33,6 +33,7 @@ STATE cpu_execute (uint8_t opcode) {
 	uint8_t reg;
 	uint8_t reg_1;
 	uint16_t result;
+	int16_t sub_result;
 	switch( opcode ){
 		case HLT :
 			return CPU_STOP;
@@ -58,20 +59,55 @@ STATE cpu_execute (uint8_t opcode) {
 			reg = cpu_fetch();
 			reg_1 = cpu_fetch();
 			result = cpu.registers[reg]  + cpu.registers[reg_1];
-			cpu.registers[cpu_fetch()] = result;	
+			cpu.registers[reg] =(uint8_t) result;	
+			
 			if (result == 0)
     				cpu.flags |= FLAG_ZERO;
 			else
     				cpu.flags &= ~FLAG_ZERO;
+		
+			if (result > 255)
+				cpu.flags |= FLAG_CARRY;
+			else
+				cpu.flags &= ~FLAG_CARRY;
+			
 			return CPU_RUNNING;
 		
 		
 		case SUB: 
 			reg = cpu_fetch();
 			reg_1 = cpu_fetch();
-			result = cpu.registers[reg]  - cpu.registers[reg_1];
-			cpu.registers[cpu_fetch()] = result;	
+			sub_result = cpu.registers[reg]  - cpu.registers[reg_1];
+			cpu.registers[reg] =(uint8_t) sub_result;	
+	
+			if (sub_result <  0 )
+				cpu.flags |= FLAG_NEGATIVE;
+			else
+				cpu.flags &= ~FLAG_NEGATIVE;
+			
+			if (sub_result == 0)
+    				cpu.flags |= FLAG_ZERO;
+			else
+    				cpu.flags &= ~FLAG_ZERO;
 			return CPU_RUNNING;	
+		
+		case ADC:
+			reg = cpu_fetch();
+			reg_1 = cpu_fetch();
+			result = cpu.registers[reg]  + cpu.registers[reg_1];
+			cpu.registers[reg] =(uint8_t) result;	
+			
+			if (result == 0)
+    				cpu.flags |= FLAG_ZERO;
+			else
+    				cpu.flags &= ~FLAG_ZERO;
+		
+			if (result > 255)
+				cpu.flags |= FLAG_CARRY;
+			else
+				cpu.flags &= ~FLAG_CARRY;
+			
+			return CPU_RUNNING;
 		
 
 	default :
