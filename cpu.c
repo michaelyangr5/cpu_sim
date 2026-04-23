@@ -27,6 +27,10 @@ uint8_t cpu_fetch(void){
 	return cpu.memory[cpu.program_counter++];
 }
 
+uint8_t cpu_get_register(uint8_t reg_num){
+	if (reg_num >= NUMBER_REGISTERS) return 0;
+	return cpu.registers[reg_num];
+}
 STATE cpu_execute (uint8_t opcode) {
 	uint8_t address;
 	uint8_t data;
@@ -34,6 +38,7 @@ STATE cpu_execute (uint8_t opcode) {
 	uint8_t reg_1;
 	uint16_t result;
 	int16_t sub_result;
+	uint8_t carry;
 	switch( opcode ){
 		case HLT :
 			return CPU_STOP;
@@ -94,8 +99,9 @@ STATE cpu_execute (uint8_t opcode) {
 		case ADC:
 			reg = cpu_fetch();
 			reg_1 = cpu_fetch();
-			result = cpu.registers[reg]  + cpu.registers[reg_1];
-			cpu.registers[reg] =(uint8_t) result;	
+			carry = (cpu.flags & FLAG_CARRY) ? 1 : 0;
+			result = cpu.registers[reg]  + cpu.registers[reg_1] + carry ;
+			cpu.registers[reg] =(uint8_t) result;
 			
 			if (result == 0)
     				cpu.flags |= FLAG_ZERO;
@@ -107,8 +113,23 @@ STATE cpu_execute (uint8_t opcode) {
 			else
 				cpu.flags &= ~FLAG_CARRY;
 			
+			
+					
 			return CPU_RUNNING;
 		
+		case JMP:
+			data = cpu_fetch();
+			cpu.program_counter = data;
+			
+			return CPU_RUNNING;
+		
+		case JZ:
+			address = cpu_fetch();
+			if(cpu.flags & FLAG_ZERO)
+				cpu.program_counter = address;
+		
+			
+			return CPU_RUNNING;
 
 	default :
 		return CPU_RUNNING;
